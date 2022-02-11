@@ -21,8 +21,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableView.dataSource = self
         
         refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .gray
         self.tableView.addSubview(refreshControl)
-        
         refreshControl.addTarget(self, action: #selector(loadData), for: UIControl.Event.valueChanged)
     }
 
@@ -42,6 +42,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         
+    }
+    
+    @IBAction func refreshData(_ sender: Any) {
+        // 開始刷新動畫
+        refreshControl.beginRefreshing()
+        
+        // 使用UIView.animate 彈性效果， 並且更改TableView的ContentOffset 使其位移
+        // 動畫結束之後使用loadData()
+        UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1, options: UIView.AnimationOptions.curveEaseIn) {
+            self.tableView.contentOffset = CGPoint(x: 0, y: -self.refreshControl.bounds.height)
+        } completion: { finish in
+            self.loadData()
+        }
+
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
